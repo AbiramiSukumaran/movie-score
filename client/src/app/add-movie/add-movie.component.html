@@ -1,0 +1,23 @@
+<form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="name" required>
+    </mat-form-field>
+
+    <label for="title">Title: </label>
+    <input id="title" type="text" formControlName="name" required>
+
+    <label for="rating">Rating: </label>
+    <input id="rating" type="text" formControlName="rating" required>
+
+    <p>Complete the form to enable button.</p>
+    <button type="submit" [disabled]="!movieForm.valid">Submit</button>
+</form>
+
+<hr>
+
+<p>Form Value: {{ movieForm.value | json }}</p>
+
+<p>Form Status: {{ movieForm.status }}</p>
+
+<button type="button" (click)="updateMovie()">Update Movie</button>
