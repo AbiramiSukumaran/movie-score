@@ -1,9 +1,41 @@
 form {
     padding-top: 1rem;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
 
-label {
-    display: block;
-    margin: .5em 0;
-    font-weight: bold;
+    border: 1px solid grey;
+    border-radius: 0.5rem;
+    width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+
+    .form-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .inputs-container {
+        display: flex;
+        gap: 2.5rem;
+    }
+
+    mat-form-field {
+        width: 300px;
+    }
+
+    label {
+        display: block;
+        margin: .5em 0;
+        font-weight: bold;
+    }
+
+    button {
+        margin-bottom: 1rem;
+    }
+
 }
