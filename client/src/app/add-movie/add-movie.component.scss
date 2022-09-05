@@ -37,5 +37,10 @@ form {
     button {
         margin-bottom: 1rem;
     }
+}
 
+@media only screen and (max-width: 800px) {
+    form .inputs-container {
+        display: block;
+    }
 }
