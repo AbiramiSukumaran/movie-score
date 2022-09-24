@@ -1,52 +1,117 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ApolloQueryResult } from '@apollo/client/core/types';
+import { Apollo, gql } from 'apollo-angular';
+import { map } from 'rxjs/operators';
+import { Movie } from './movie';
+
+interface SearchMovieResult {
+  searchMovies: Movie[];
+}
+
+interface RandomMovieResult {
+  randomMovie: Movie;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
-  URL = 'https://data.mongodb-api.com/app/data-xevmk/endpoint/data/v1/action/aggregate';
+  constructor(
+    private apollo: Apollo
+  ) { }
 
-  constructor(private http: HttpClient) { }
-
-  getSampleMovie() {
-
-    const body = {
-      dataSource: 'Cluster0',
-      database: 'movies',
-      collection: 'movies',
-      pipeline: [
-        {
-          $sample: {
-            size: 1
+  searchMovieDirector(query: string) {
+    return this.apollo.query({
+      query: gql`
+        query($query: String) {
+          searchMovies(input: { field: "director", query: $query }) {
+            director
           }
         }
-      ]
-    };
+      `,
+      variables: { query }
+    }).pipe(map((result) =>
+      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.director)
+    ));
+  }
 
-    const headers: HttpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Request-Headers': '*',
-      'api-key': 'rX1p51Khf1l5zueBGbNNl3jZ4ElLrDb3hrWVOwgDrF1uYqDc9EGF6z7aFD8qrjjhk'
-    });
+  searchMovieWriter(query: string) {
+    return this.apollo.query({
+      query: gql`
+        query($query: String) {
+          searchMovies(input: { field: "writer", query: $query }) {
+            writer
+          }
+        }
+      `,
+      variables: { query }
+    }).pipe(map((result) =>
+      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.writer)
+    ));
+  }
 
-    return this.http.post(this.URL, body, {
-      headers
-    });
+  searchMovieStar(query: string) {
+    return this.apollo.query({
+      query: gql`
+        query($query: String) {
+          searchMovies(input: { field: "star", query: $query }) {
+            star
+          }
+        }
+      `,
+      variables: { query }
+    }).pipe(map((result) =>
+      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.star)
+    ));
+  }
+
+  searchMovieByTitle(query: string) {
+    return this.apollo.query({
+      query: gql`
+        query($query: String) {
+          searchMovies(input: { field: "name", query: $query }) {
+            name
+            rating
+            genre
+            director
+            writer
+            star
+            country
+            company
+            runtime
+            year
+            released
+            budget
+          }
+        }
+      `,
+      variables: { query }
+    }).pipe(map((result) =>
+      (result.data as SearchMovieResult).searchMovies));
+  }
+
+  getRandomMovie() {
+    return this.apollo.query({
+      fetchPolicy: 'no-cache',
+      query: gql`
+        query {
+          randomMovie {
+            budget
+            company
+            country
+            director
+            genre
+            name
+            rating
+            released
+            runtime
+            score
+            star
+            writer
+            year
+          }
+        }
+      `
+    }).pipe(map((result) => (result as ApolloQueryResult<RandomMovieResult>).data.randomMovie));
   }
 }
-
-
-
-// curl --location --request POST 'https://data.mongodb-api.com/app/data-xevmk/endpoint/data/v1/action/aggregate' \
-// --header 'Content-Type: application/json' \
-// --header 'Access-Control-Request-Headers: *' \
-// --header 'api-key: rX1p51Khf1l5zueBGbNNl3jZ4ElLrDb3hrWVOwgDrF1uYqDc9EGF6z7aFD8qrjjh' \
-// --data-raw '{
-//     "collection":"movies",
-//     "database":"movies",
-//     "dataSource":"Cluster0",
-//     "pipeline": [
-//       { "$sample": { "size": 1 } }
-//     ]
-// }'
