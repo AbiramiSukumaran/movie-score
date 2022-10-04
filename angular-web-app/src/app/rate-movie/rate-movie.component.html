@@ -1,7 +1,14 @@
 <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
     <div class="form-details">
         <h2>Movie Form</h2>
-        <button mat-stroked-button color="basic" type="button" (click)="updateMovie()">Load Sample Movie</button>
+        <button mat-stroked-button color="basic" type="button" (click)="loadRandomMovie()"
+            [disabled]="randomMovieRequestPending">
+            <ng-container *ngIf="!randomMovieRequestPending; else movieLoading">Load Random Movie</ng-container>
+        </button>
+        <ng-template #movieLoading>
+            Loading movie...
+        </ng-template>
+
     </div>
 
     <div class="inputs-container">
@@ -10,41 +17,62 @@
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Title</mat-label>
-                    <input matInput formControlName="name" required>
+                    <input matInput formControlName="name" required [matAutocomplete]="autotitle">
+                    <mat-autocomplete #autotitle="matAutocomplete" (optionSelected)="titleSelected($event)">
+                        <mat-option *ngFor="let option of titleOptions | async" [value]="option">
+                            {{option.name}}
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
-
             </div>
 
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Rating</mat-label>
-                    <input matInput formControlName="rating" required>
+                    <select matNativeControl formControlName="rating" name="rating">
+                        <option value="" selected></option>
+                        <option *ngFor="let rating of ratings" [value]="rating">
+                            {{ rating }}
+                        </option>
+                    </select>
                 </mat-form-field>
             </div>
-
 
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Genre</mat-label>
-                    <input matInput formControlName="genre" required>
+                    <select matNativeControl formControlName="genre" name="genre">
+                        <option value="" selected></option>
+                        <option *ngFor="let genre of genres" [value]="genre">
+                            {{ genre }}
+                        </option>
+                    </select>
                 </mat-form-field>
             </div>
-
-
 
             <h3>Cast & Crew</h3>
 
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Director</mat-label>
-                    <input matInput formControlName="director" required>
+                    <input matInput formControlName="director" required [matAutocomplete]="autodirector">
+                    <mat-autocomplete #autodirector="matAutocomplete">
+                        <mat-option *ngFor="let option of directorOptions | async" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Writer</mat-label>
-                    <input matInput formControlName="writer" required>
+                    <input matInput formControlName="writer" required [matAutocomplete]="autowriter">
+                    <mat-autocomplete #autowriter="matAutocomplete">
+                        <mat-option *ngFor="let option of writerOptions | async" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 
@@ -52,7 +80,12 @@
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Star</mat-label>
-                    <input matInput formControlName="star" required>
+                    <input matInput formControlName="star" required [matAutocomplete]="autostar">
+                    <mat-autocomplete #autostar="matAutocomplete">
+                        <mat-option *ngFor="let option of starOptions | async" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 
@@ -108,11 +141,11 @@
         </div>
     </div>
 
-    <button type="submit" mat-raised-button color="primary" [disabled]="!movieForm.valid || requestPending">
+    <button type="submit" mat-raised-button color="primary" [disabled]="!movieForm.valid || scoreRequestPending">
         Get Score!
     </button>
 
-    <span *ngIf="requestPending">Loading score...</span>
+    <span *ngIf="scoreRequestPending">Loading score...</span>
 
     <div *ngIf="score !== null">
         <h2>The score of '{{ movieForm.value.name }}' is {{ score }}!</h2>

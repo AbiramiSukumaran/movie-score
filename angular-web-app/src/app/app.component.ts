@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    <app-add-movie></app-add-movie>
+    <rate-movie></rate-movie>
   `,
   styles: []
 })
