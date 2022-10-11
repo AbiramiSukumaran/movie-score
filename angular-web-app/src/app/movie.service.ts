@@ -30,8 +30,12 @@ export class MovieService {
         }
       `,
       variables: { query }
-    }).pipe(map((result) =>
-      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.director)
+    }).pipe(map((result) => {
+        const directors = (result.data as SearchMovieResult).searchMovies
+          .map((movie) => movie.director);
+
+        return this.getUniqueValues(directors);
+      }
     ));
   }
 
@@ -45,8 +49,11 @@ export class MovieService {
         }
       `,
       variables: { query }
-    }).pipe(map((result) =>
-      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.writer)
+    }).pipe(map((result) => {
+        const writers = (result.data as SearchMovieResult).searchMovies.map((movie) => movie.writer)
+
+        return this.getUniqueValues(writers);
+      }
     ));
   }
 
@@ -60,8 +67,11 @@ export class MovieService {
         }
       `,
       variables: { query }
-    }).pipe(map((result) =>
-      (result.data as SearchMovieResult).searchMovies.map((movie) => movie.star)
+    }).pipe(map((result) => {
+        const stars = (result.data as SearchMovieResult).searchMovies.map((movie) => movie.star)
+
+        return this.getUniqueValues(stars);
+      }
     ));
   }
 
@@ -113,5 +123,9 @@ export class MovieService {
         }
       `
     }).pipe(map((result) => (result as ApolloQueryResult<RandomMovieResult>).data.randomMovie));
+  }
+
+  private getUniqueValues(arr: string[]) {
+    return Array.from(new Set(arr));
   }
 }
