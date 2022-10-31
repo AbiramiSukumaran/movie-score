@@ -58,7 +58,7 @@ public class HelloHttpFunction implements HttpFunction {
         
     PredictionServiceSettings predictionServiceSettings =
         PredictionServiceSettings.newBuilder()
-            .setEndpoint("us-central1-aiplatform.googleapis.com:443")
+            .setEndpoint("<<location>>-aiplatform.googleapis.com:443")
             .build();
       int cls = 0;
   
