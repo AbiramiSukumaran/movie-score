@@ -1,5 +1,5 @@
 
-package com.example;
+package gcfv2;
 
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
@@ -39,7 +39,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bson.conversions.Bson;
 
-public class Example implements HttpFunction {
+public class HelloHttpFunction implements HttpFunction {
   @Override
   public void service(HttpRequest request, HttpResponse response) throws Exception {
     BufferedWriter writer = response.getWriter();
