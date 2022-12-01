@@ -1,6 +1,6 @@
 <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
     <div class="form-details">
-        <h2>Movie Form</h2>
+        <h2>Predict the Rating of a Movie using an ML Model!</h2>
         <button mat-stroked-button color="basic" type="button" (click)="loadRandomMovie()"
             [disabled]="randomMovieRequestPending">
             <ng-container *ngIf="!randomMovieRequestPending; else movieLoading">Load Random Movie</ng-container>
@@ -148,6 +148,6 @@
     <span *ngIf="scoreRequestPending">Loading score...</span>
 
     <div *ngIf="score !== null">
-        <h2>The score of '{{ movieForm.value.name }}' is {{ score }}!</h2>
+        <h2>The score of '{{ movieForm.value.name }}' is {{ score }} out of 10!</h2>
     </div>
 </form>

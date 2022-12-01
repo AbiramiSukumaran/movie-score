@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { ScoreService } from '../score.service';
 import { MovieService } from '../movie.service';
 import { Observable } from 'rxjs';
 import { Movie } from '../movie';
-
 
 @Component({
   selector: 'rate-movie',
@@ -66,34 +65,12 @@ export class RateMovieComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleOptions = this.movieForm.controls.name.valueChanges.pipe(
-      filter(text => text!.length > 1),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap(searchTerm => this.movieService.searchMovieByTitle(searchTerm!)),
-    );
+    this.movieForm.valueChanges.subscribe(() => this.score = null);
 
-    this.directorOptions = this.movieForm.controls.director.valueChanges.pipe(
-      filter(text => text!.length > 2),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap(searchTerm => this.movieService.searchMovieDirector(searchTerm!)),
-    );
-
-    this.writerOptions = this.movieForm.controls.writer.valueChanges.pipe(
-      filter(text => text!.length > 2),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap(searchTerm => this.movieService.searchMovieWriter(searchTerm!)),
-    );
-
-    this.starOptions = this.movieForm.controls.star.valueChanges.pipe(
-      filter(text => text!.length > 2),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap(searchTerm => this.movieService.searchMovieStar(searchTerm!)),
-    );
-
+    this.titleOptions = this.searchAutocomplete(this.movieForm.controls.name, this.movieService.searchMovieByTitle.bind(this.movieService));
+    this.directorOptions = this.searchAutocomplete(this.movieForm.controls.director, this.movieService.searchMovieDirector.bind(this.movieService));
+    this.writerOptions = this.searchAutocomplete(this.movieForm.controls.writer, this.movieService.searchMovieWriter.bind(this.movieService));
+    this.starOptions = this.searchAutocomplete(this.movieForm.controls.star, this.movieService.searchMovieStar.bind(this.movieService));
   }
 
   titleSelected(event: any) {
@@ -128,6 +105,15 @@ export class RateMovieComponent implements OnInit {
         this.score = score;
         this.scoreRequestPending = false;
       });
+  }
+
+  private searchAutocomplete(formControl: FormControl<any>, searchFn: (searchTerm: string) => Observable<any[]>) {
+    return formControl.valueChanges.pipe(
+      filter(text => text!.length > 1),
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(searchTerm => searchFn(searchTerm!)),
+    );
   }
 
   private dateToString(date: Date) {
